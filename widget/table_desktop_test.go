@@ -1,3 +1,4 @@
+//go:build !mobile
 // +build !mobile
 
 package widget
@@ -18,7 +19,7 @@ func TestTable_Hovered(t *testing.T) {
 
 	table := NewTable(
 		func() (int, int) { return 2, 2 },
-		func() fyne.CanvasObject {
+		func(id TableCellID) fyne.CanvasObject {
 			return NewLabel("placeholder")
 		},
 		func(id TableCellID, c fyne.CanvasObject) {

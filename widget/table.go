@@ -28,7 +28,7 @@ type Table struct {
 	BaseWidget
 
 	Length       func() (int, int)
-	CreateCell   func() fyne.CanvasObject
+	CreateCell   func(id TableCellID) fyne.CanvasObject
 	UpdateCell   func(id TableCellID, template fyne.CanvasObject)
 	OnSelected   func(id TableCellID)
 	OnUnselected func(id TableCellID)
@@ -47,7 +47,7 @@ type Table struct {
 // passed template CanvasObject.
 //
 // Since: 1.4
-func NewTable(length func() (int, int), create func() fyne.CanvasObject, update func(TableCellID, fyne.CanvasObject)) *Table {
+func NewTable(length func() (int, int), create func(TableCellID) fyne.CanvasObject, update func(TableCellID, fyne.CanvasObject)) *Table {
 	t := &Table{Length: length, CreateCell: create, UpdateCell: update}
 	t.ExtendBaseWidget(t)
 	return t
@@ -291,7 +291,7 @@ func (t *Table) finishScroll() {
 
 func (t *Table) templateSize() fyne.Size {
 	if f := t.CreateCell; f != nil {
-		template := f() // don't use cache, we need new template
+		template := f(TableCellID{0, 0}) // don't use cache, we need new template
 		return template.MinSize()
 	}
 
@@ -658,7 +658,7 @@ func (r *tableCellsRenderer) Refresh() {
 			if !ok {
 				c = r.pool.Obtain()
 				if f := r.cells.t.CreateCell; f != nil && c == nil {
-					c = f()
+					c = f(id)
 				}
 				if c == nil {
 					continue
